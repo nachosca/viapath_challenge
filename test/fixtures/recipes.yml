@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ready_in_minutes: 1
+  source_url: MyString
+  servings: 1
+  image: MyString
+  title: MyString
+  string: MyString
+
+two:
+  ready_in_minutes: 1
+  source_url: MyString
+  servings: 1
+  image: MyString
+  title: MyString
+  string: MyString

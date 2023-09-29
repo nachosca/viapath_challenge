@@ -3,10 +3,11 @@ class Api::RatesController < Api::BaseController
   before_action :load_current_user  
 
   def create
-    recipe = Recipe.find_by(recipe_id: params[:recipe_id])
-    rate = Rate.new(recipe_id: recipe.id, rating: params[:rating])
+    recipe = Recipe.find_by(recipe_id: permitted_params[:recipe_id])
 
-    rate.user = @current_user
+    render json: { message: 'Recipe not found' }, status: 404 and return unless recipe.present?
+
+    rate = recipe.rates.new(rating: permitted_params[:rating], user: @current_user)
 
     if rate.save
       render json: rate, status: :created

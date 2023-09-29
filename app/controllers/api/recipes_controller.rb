@@ -20,78 +20,20 @@ class Api::RecipesController < Api::BaseController
 
 
   def search
-    # Create a Faraday connection
-    base_url = 'https://api.spoonacular.com'
-    api_key = 'e612d78f890949d18d8ddcb41a682c5d'
+    api_key = '946d4e7ae4724067b144a1db22e80bbd'
+    recipe_search_service = RecipeSearchService.new(api_key)
 
-
-    offset = 0
-    results = []
-
-    begin
-      loop do
-        conn = Faraday.new(url: base_url) do |faraday|
-          faraday.request :url_encoded
-          faraday.adapter Faraday.default_adapter
-        end
-
-        # Build the GET request
-        response = conn.get '/recipes/search' do |req|
-          req.params['query'] = params[:query]
-          req.params['apiKey'] = api_key
-          req.params['number'] = 100
-          req.params['offset'] = offset
-        end
-
-        parsed_response = JSON.parse(response.body)
-
-        results << parsed_response['results']
-
-        offset += 100
-
-        break if offset >= parsed_response['totalResults']
-      end
-
-      results = results.flatten
-    
-      results.each do |response_recipe|
-        recipe = save_recipe(response_recipe)
-        RecipeDetailsWorker.perform_async(recipe.id, recipe.source_url)
-      end
-
+    if recipe_search_service.search_and_save(params[:query])
       render json: {}, status: :ok
-    rescue StandardError => e
-      puts(e.message)
-      render json: { error: e.message }, status: :unprocessable_entity
+    else
+      render json: { error: 'Failed to fetch and save recipes' }, status: :unprocessable_entity
     end
   end
 
   private
 
-  def model_params
+  def permitted_params
     params.require(:model).permit(:query)
-  end
-
-  def save_recipe(response_recipe)
-    recipe = Recipe.find_by(recipe_id: response_recipe['id'])
-        
-    if recipe
-      if recipe.update!(ready_in_minutes: response_recipe['readyInMinutes'],
-                    source_url: response_recipe['sourceUrl'],
-                    image: response_recipe['image'],
-                    servings: response_recipe['servings'],
-                    title: response_recipe['title'])
-        return Recipe.find_by(recipe_id: response_recipe['id'])
-      end
-    else
-      return Recipe.create(
-        recipe_id: response_recipe['id'],
-        ready_in_minutes: response_recipe['readyInMinutes'],
-        source_url: response_recipe['sourceUrl'],
-        image: response_recipe['image'],
-        servings: response_recipe['servings'],
-        title: response_recipe['title'])
-    end
   end
 
 end

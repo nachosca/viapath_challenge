@@ -4,7 +4,7 @@ class UpdateRecipesWorkerJob
   def perform
 
     base_url = 'https://api.spoonacular.com'
-    api_key = 'e612d78f890949d18d8ddcb41a682c5d'
+    api_key = '946d4e7ae4724067b144a1db22e80bbd'
     conn = Faraday.new(url: base_url) do |faraday|
       faraday.request :url_encoded
       faraday.adapter Faraday.default_adapter

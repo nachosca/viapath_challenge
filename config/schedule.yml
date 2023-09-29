@@ -1,5 +1,5 @@
 update_recipes_task:
-  cron: '* * * * *' # Runs every day at 4:00 AM
+  cron: '0 4 * * *' # Runs every day at 4:00 AM
   class: 'UpdateRecipesWorkerJob'
   queue: 'default'
   args: []

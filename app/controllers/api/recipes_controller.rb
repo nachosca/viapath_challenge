@@ -20,35 +20,49 @@ class Api::RecipesController < Api::BaseController
 
 
   def search
-    byebug
     # Create a Faraday connection
     base_url = 'https://api.spoonacular.com'
-    api_key = 'fb3e49784d1e48c880e2b5ae82ea90a8'
-    conn = Faraday.new(url: base_url) do |faraday|
-      faraday.request :url_encoded
-      faraday.adapter Faraday.default_adapter
-    end
+    api_key = 'e612d78f890949d18d8ddcb41a682c5d'
 
-    # Build the GET request
-    response = conn.get '/recipes/search' do |req|
-      req.params['query'] = params[:query]
-      req.params['apiKey'] = api_key
-    end
 
-    # Handle the response
-    if response.status == 200
-      parsed_response = JSON.parse(response.body)
+    offset = 0
+    results = []
 
-      parsed_response.results.each do |response_recipe|
-        save_recipe(response_recipe)
-        RecipeDetailsWorker.perform_async(response_recipe.id, response_recipe.source_url)
+    begin
+      loop do
+        conn = Faraday.new(url: base_url) do |faraday|
+          faraday.request :url_encoded
+          faraday.adapter Faraday.default_adapter
+        end
+
+        # Build the GET request
+        response = conn.get '/recipes/search' do |req|
+          req.params['query'] = params[:query]
+          req.params['apiKey'] = api_key
+          req.params['number'] = 100
+          req.params['offset'] = offset
+        end
+
+        parsed_response = JSON.parse(response.body)
+
+        results << parsed_response['results']
+
+        offset += 100
+
+        break if offset >= parsed_response['totalResults']
       end
 
-      render json: {
-        recipes: ActiveModelSerializers::SerializableResource.new(response_recipe, each_serializer: RecipeSerializer)
-      }, status: :ok
-    else
-      render json: { error: "Request failed with status #{response.status}" }, status: :unprocessable_entity
+      results = results.flatten
+    
+      results.each do |response_recipe|
+        recipe = save_recipe(response_recipe)
+        RecipeDetailsWorker.perform_async(recipe.id, recipe.source_url)
+      end
+
+      render json: {}, status: :ok
+    rescue StandardError => e
+      puts(e.message)
+      render json: { error: e.message }, status: :unprocessable_entity
     end
   end
 
@@ -59,22 +73,24 @@ class Api::RecipesController < Api::BaseController
   end
 
   def save_recipe(response_recipe)
-    recipe = Recipe.find_by(recipe_id: response_recipe[:id])
+    recipe = Recipe.find_by(recipe_id: response_recipe['id'])
         
     if recipe
-      recipe.update(ready_in_minutes: response_recipe.readyInMinutes,
-                    source_url: response_recipe.sourceUrl,
-                    image: response_recipe.image,
-                    servings: response_recipe.servings,
-                    title: response_recipe.title)
+      if recipe.update!(ready_in_minutes: response_recipe['readyInMinutes'],
+                    source_url: response_recipe['sourceUrl'],
+                    image: response_recipe['image'],
+                    servings: response_recipe['servings'],
+                    title: response_recipe['title'])
+        return Recipe.find_by(recipe_id: response_recipe['id'])
+      end
     else
-      Recipe.create(
-        recipe_id: response_recipe.id,
-        ready_in_minutes: response_recipe.readyInMinutes,
-        source_url: response_recipe.sourceUrl,
-        image: response_recipe.image,
-        servings: response_recipe.servings,
-        title: response_recipe.title)
+      return Recipe.create(
+        recipe_id: response_recipe['id'],
+        ready_in_minutes: response_recipe['readyInMinutes'],
+        source_url: response_recipe['sourceUrl'],
+        image: response_recipe['image'],
+        servings: response_recipe['servings'],
+        title: response_recipe['title'])
     end
   end
 

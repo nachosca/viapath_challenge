@@ -3,7 +3,8 @@ class Api::RatesController < Api::BaseController
   before_action :load_current_user  
 
   def create
-    rate = Rate.new(permitted_params)
+    recipe = Recipe.find_by(recipe_id: params[:recipe_id])
+    rate = Rate.new(recipe_id: recipe.id, rating: params[:rating])
 
     rate.user = @current_user
 

@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "b4b132cb-0cd3-47bd-ae49-83017786d348",
+		"name": "Viapath",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5585564"
+	},
+	"item": [
+		{
+			"name": "devise",
+			"item": [
+				{
+					"name": "Sign in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"nachosca@gmail.com\",\r\n    \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/sign_in",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"sign_in"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"nachosca@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"confirm_success_url\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Recipes in DB",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhY2Nlc3MtdG9rZW4iOiJsQXo0TlRGQ0E4M0xGYnlPS0M0UHV3IiwidG9rZW4tdHlwZSI6IkJlYXJlciIsImNsaWVudCI6Ilp3eXF1VHJJeFJvdEttQlZJdXlmOVEiLCJleHBpcnkiOiIxNjk3MTI4NDcyIiwidWlkIjoibmFjaG9zY2FAZ21haWwuY29tIn0=",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/recipes/search_and_save?query=Pumpkin Cake",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"recipes",
+						"search_and_save"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "Pumpkin Cake"
+						},
+						{
+							"key": "per_page",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_by_ids",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhY2Nlc3MtdG9rZW4iOiJsQXo0TlRGQ0E4M0xGYnlPS0M0UHV3IiwidG9rZW4tdHlwZSI6IkJlYXJlciIsImNsaWVudCI6Ilp3eXF1VHJJeFJvdEttQlZJdXlmOVEiLCJleHBpcnkiOiIxNjk3MTI4NDcyIiwidWlkIjoibmFjaG9zY2FAZ21haWwuY29tIn0=",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ids\": [1,2,3,4,5] \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/recipes/get_by_ids",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"recipes",
+						"get_by_ids"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rate",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhY2Nlc3MtdG9rZW4iOiJsQXo0TlRGQ0E4M0xGYnlPS0M0UHV3IiwidG9rZW4tdHlwZSI6IkJlYXJlciIsImNsaWVudCI6Ilp3eXF1VHJJeFJvdEttQlZJdXlmOVEiLCJleHBpcnkiOiIxNjk3MTI4NDcyIiwidWlkIjoibmFjaG9zY2FAZ21haWwuY29tIn0=",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rating\" : 5,\r\n    \"recipe_id\" : 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/rates",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"rates"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

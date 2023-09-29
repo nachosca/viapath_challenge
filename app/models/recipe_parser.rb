@@ -1,11 +1,23 @@
+require 'nokogiri'
+
 class RecipeParser
   def initialize(url)
-    @url = url
-    @document = Nokogiri::HTML(open(@url))
+    @url = url.gsub('http://', 'https://')
+    begin
+      conn = Faraday.new(url: @url) do |faraday|
+        faraday.adapter Faraday.default_adapter
+      end
+
+      response = conn.get
+      @document = Nokogiri::HTML(response.body)
+      puts('asdfasd' + @document.to_s)
+    rescue StandardError => e
+      puts(e.message)
+    end
   end
 
   def title
-    "Title: " + @document.css('h1').map(&:text)
+    "Title: " + @document.css('h1').text
   end
 
   def about
@@ -22,8 +34,13 @@ class RecipeParser
   end
 
   def preparation
-    prep = @document.css('[itemprop="recipeInstructions"]').map { |text| text.gsub(/<a.*?>|<\/a>/, '') }
-    "Preparation: " +  prep.join(", ")
+    preparation_steps = @document.css('.pane-node-field-rec-steps .step-body')
+    # Iterate through the preparation steps and print their text
+    prep = ''
+    preparation_steps.each_with_index do |step, index|
+      prep += "Step #{index + 1}: #{step.text.strip} "  # Use .strip to remove leading/trailing whitespace
+    end
+    "Preparation: " +  prep
   end
 
   def text

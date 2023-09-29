@@ -1,17 +1,17 @@
 class Recipe < ApplicationRecord
   has_many :rates
 
-  def details
-    recipe_details.open do |file|
-      file.read
-    end
-  end
-
   def rating
     if rates.any?
-      rates.sum(:rating) / rates.size
+      result = rates.sum(:rating).to_f / rates.size
+      result.round(2)
     else
       0
     end
+  end
+
+  def details
+    binary_data = recipe_details # Replace with how you retrieve it
+    binary_data.force_encoding(Encoding::UTF_8)
   end
 end

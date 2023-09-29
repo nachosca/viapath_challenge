@@ -51,6 +51,7 @@ gem 'devise'
 gem 'devise_token_auth', github: 'lynndylanhurley/devise_token_auth', branch: 'master'
 
 gem 'nokogiri'
+gem 'active_model_serializers'
 gem 'byebug'
 
 # Use Sass to process CSS

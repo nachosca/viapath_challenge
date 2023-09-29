@@ -4,15 +4,18 @@ class RecipeDetailsWorker
   def perform(id, source_url)
     recipe_details = RecipeParser.new(source_url)
 
-    file = File.write('my_file.txt', recipe_details.text, encoding: 'UTF-8')
+    begin
+      file = recipe_details.text.encode(Encoding::UTF_8)
 
-    recipe = Recipe.find_by(recipe_id: id)
+      recipe = Recipe.find(id)
 
-    if recipe
-      recipe.recipe_details = file
-      recipe.save
+      if recipe
+        recipe.recipe_details = file
+        recipe.save
+      end
+    rescue StandardError => e
+      puts(e.message)
     end
-
 
   end
 end

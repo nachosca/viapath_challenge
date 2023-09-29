@@ -10,7 +10,6 @@ class RecipeParser
 
       response = conn.get
       @document = Nokogiri::HTML(response.body)
-      puts('asdfasd' + @document.to_s)
     rescue StandardError => e
       puts(e.message)
     end
